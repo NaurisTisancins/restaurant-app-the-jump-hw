@@ -1,0 +1,5 @@
+{
+  "domain": "dev-tcwrbe-e.us.auth0.com",
+  "clientId": "oSL7aI23fJe3TOQJgJYI8dTKYRwg5eeB",
+  "audience": "https://localhost:5000/v1/api"
+}
