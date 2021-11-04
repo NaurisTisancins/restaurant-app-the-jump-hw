@@ -129,7 +129,7 @@ export const ReservationProvider = (props) => {
         addReservation,
       }}
     >
-      {props.childern}
+      {props.children}
     </ReservationContext.Provider>
   )
 }

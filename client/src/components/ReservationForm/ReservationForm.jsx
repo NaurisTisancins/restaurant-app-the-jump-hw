@@ -3,11 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   Button,
   TextField,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from "@material-ui/core";
+
+
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
@@ -36,9 +34,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const schema = yup.object().shape({
-  customerID: yup.string().required(),
-  date: yup.string().required(),
-  table: yup.mixed().oneOf(tables).required(),
+  time: yup.string().required(),
+  date: yup.date().required(),
+  table: yup.number().oneOf(tables).required(),
   name: yup.string().required(),
   email: yup.string().required().email(),
   guest: yup.number().required(),
@@ -49,17 +47,19 @@ function ReservationForm({ initialValues }) {
   const [populated, setPopulated] = useState(false);
 
   const { addReservation, user } = useContext(ReservationContext);
-  
+
+  const userID = user.sub;
+
   const defaultValues = {
-    cunstomerID: user.sub,
-    date: new Date(),
+    time: '',
+    date: '',
     table: '',
     name: '',
-    email: user.email,
+    email: '',
     guests: '',
   };//defaultValues
 
-  const { handleSubmit, errors, control, reset, formState } = useForm({
+  const {handleSubmit, errors, control, reset, formState } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
     reValidateMode: "onChange",
@@ -79,13 +79,61 @@ function ReservationForm({ initialValues }) {
         <Controller
           render={(
             { onChange, onBlur, value, name, ref },
-            {invalid, isTouched, isDirty}
+            { invalid, isTouched, isDirty }
+          ) => (
+            <TextField
+              inputRef={ref}
+              type="time"
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              error={!!errors.title}
+              helperText={errors.title?.message}
+              id="time"
+              name={name}
+
+            />
+          )}
+          name="time"
+          control={control}
+          rules={{ required: true }}
+        />
+        <Controller
+          render={(
+            { onChange, onBlur, value, name, ref },
+            { invalid, isTouched, isDirty }
+          ) => (
+            <TextField
+              inputRef={ref}
+              type="date"
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              
+              error={!!errors.title}
+              helperText={errors.title?.message}
+              id="date"
+              name={name}
+            />
+          )}
+          name="date"
+          control={control}
+          rules={{ required: true }}
+        />
+      </div>
+
+      <div className={classes.formrow}>
+        <Controller
+          render={(
+            { onChange, onBlur, value, name, ref },
+            { invalid, isTouched, isDirty }
           ) => (
             <TextField
               inputRef={ref}
               value={value}
               onChange={onChange}
               onBlur={onBlur}
+              type="number"
               error={!!errors.title}
               helperText={errors.title?.message}
               id="table"
@@ -95,12 +143,98 @@ function ReservationForm({ initialValues }) {
           )}
           name="table"
           control={control}
-          rules={{required: true}}
+          rules={{ required: true }}
         />
       </div>
-    </form>
-  )
 
+      <div className={classes.formrow}>
+        <Controller
+          render={(
+            { onChange, onBlur, value, name, ref },
+            { invalid, isTouched, isDirty }
+          ) => (
+            <TextField
+              inputRef={ref}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              type="text"
+              error={!!errors.title}
+              helperText={errors.title?.message}
+              id="name"
+              name={name}
+              label="name"
+            />
+          )}
+          name="name"
+          control={control}
+          rules={{ required: true }}
+        />
+      </div>
+
+      <div className={classes.formrow}>
+        <Controller
+          render={(
+            { onChange, onBlur, value, name, ref },
+            { invalid, isTouched, isDirty }
+          ) => (
+            <TextField
+              inputRef={ref}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+             type="text"
+              error={!!errors.title}
+              helperText={errors.title?.message}
+              id="email"
+              name={name}
+              label="email"
+            />
+          )}
+          name="email"
+          control={control}
+          rules={{ required: true }}
+        />
+      </div>
+
+      <div className={classes.formrow}>
+        <Controller
+          render={(
+            { onChange, onBlur, value, name, ref },
+            { invalid, isTouched, isDirty }
+          ) => (
+            <TextField
+              inputRef={ref}
+              value={value}
+              onChange={onChange}
+              onBlur={onBlur}
+              type="number"
+              error={!!errors.title}
+              helperText={errors.title?.message}
+              id="guests"
+              name={name}
+              label="guests"
+            />
+          )}
+          name="guests"
+          control={control}
+          rules={{ required: true }}
+        />
+      </div>
+      <div className={classes.formrow}>
+        <Button onClick={() => reset(defaultValues)}>Reset</Button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          className={classes.button}
+        disabled={!isValid}
+        >
+          {populated ? "Update" : "Add"} Reservation
+        </Button>
+      </div>
+    </form>
+  );//return
 }
 
 export default ReservationForm;

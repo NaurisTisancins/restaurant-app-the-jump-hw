@@ -65,6 +65,7 @@ function App() {
               <OrdersProvider>
                 <BasketProvider>
                   <ReservationProvider>
+                    
                     <Auth0Wrapper>
                       <Switch>
                         <Route exact path="/" component={Home} />
@@ -85,6 +86,7 @@ function App() {
                         <Route path="*" component={NotFound} />
                       </Switch>
                     </Auth0Wrapper>
+                    
                   </ReservationProvider>
                 </BasketProvider>
               </OrdersProvider>
