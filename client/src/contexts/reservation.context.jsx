@@ -137,10 +137,10 @@ export const ReservationProvider = (props) => {
     async (id, updates) => {
       let newReservation = null;
       setLoading();
-      const { Reservations } = state;
+      const { reservations } = state;
       try {
-        const response = await fetch(`/api/v1/resrvation/${id}`, {
-          methot: "PUT",
+        const response = await fetch(`/api/v1/reservation/${id}`, {
+          method: "PUT",
           headers: accessToken ?
             { ...headers, Authorization: `Bearer ${accessToken}` } : headers,
           body: JSON.stringify(updates),
@@ -149,16 +149,16 @@ export const ReservationProvider = (props) => {
           throw response;
         };
         //update state
-        const idx = Reservations.findIndex((Reservation) => Reservation._id === id);
-        const oldReservation = Reservations[idx];
+        const idx = reservations.findIndex((Reservation) => Reservation._id === id);
+        const oldReservation = reservations[idx];
         newReservation = {
           ...oldReservation,
           ...updates,
         };
         const updatedReservations = [
-          ...Reservations.slice(0, idx),
+          ...reservations.slice(0, idx),
           newReservation,
-          ...Reservations.slice(idx + 1),
+          ...reservations.slice(idx + 1),
         ];
         setReservations(updatedReservations);
         addToast(`Updated ${newReservation.name} reservation`, {
@@ -174,6 +174,41 @@ export const ReservationProvider = (props) => {
     }, [accessToken, addToast, setError, setLoading, setReservations, state]
   );//updateOwnReservation
 
+  const deleteOwnReservation = useCallback(
+    async (id) => {
+      let deletedReservation = null;
+      setLoading();
+      const { reservations } = state;
+      try {
+        const response = await fetch(`/api/v1/reservation/${id}`, {
+          method: "DELETE",
+          headers: accessToken ?
+            { ...headers, Authorization: `Bearer ${accessToken}` } :
+            headers,
+        });
+        if (response.status !== 204) {
+          throw response;
+        };
+        //update state
+        const idx = reservations.findIndex((reservation) => reservation._id === id);
+        deletedReservation = reservations[idx];
+        const updatedReservations = {
+          ...reservations.slice(0, idx),
+          ...reservations.slice(idx + 1),
+        };
+        setReservations(updatedReservations);
+        addToast(`Deleted ${deletedReservation.name}`, {
+          appearance: "success",
+        });
+      } catch (err) {
+        setError(err);
+        addToast(`Error: Failed to delete ${deletedReservation.name}`, {
+          appearance: "error",
+        });
+      }
+    }, [accessToken, addToast, setError, setLoading, setReservations, state]
+  );//deleteOwnReservation
+
 
 
   return (
@@ -186,6 +221,8 @@ export const ReservationProvider = (props) => {
         error,
         fetchOwnReservations,
         addOwnReservation,
+        updateOwnReservation,
+        deleteOwnReservation,
       }}
     >
       {props.children}

@@ -6,6 +6,7 @@ const {
   getOwnReservations,
   addOwnReservation,
   updateOwnReservation,
+  removeOwnReservation,
 } = require("../controllers/reservation.controller");
 
 const { checkPermissions } = require("../middleware/permissions.middleware");
@@ -49,6 +50,7 @@ router
     checkJwt,
     checkPermissions(UpdateOwnReservation),
     updateOwnReservation
-  )
+)
+  .delete("/:id", checkJwt, checkPermissions(DeleteOwnReservation), removeOwnReservation)
 
 module.exports = router;

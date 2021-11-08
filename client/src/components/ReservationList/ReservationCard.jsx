@@ -4,10 +4,8 @@ import { CardActions } from "@material-ui/core";
 import { CardContent } from "@material-ui/core";
 import { Button } from "@material-ui/core";
 import { Typography } from "@material-ui/core";
-import { IconButton } from "@material-ui/core";
-import { Delete, Edit } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { ReservationContext } from '../../contexts/reservation.context';
 
 const useStyles = makeStyles((theme) => ({
@@ -20,9 +18,11 @@ const useStyles = makeStyles((theme) => ({
 
 
 function ReservationCard({ reservation }) {
-  const { customerID, date, time, email, guests, name, table, _id } = reservation;
-
+  const { customerID, dateTime, email, guests, name, table, _id } = reservation;
   const { deleteOwnReservation } = useContext(ReservationContext);
+  const history = useHistory();
+
+  
   const styles = useStyles();
   return (
     <Card sx={{ minWidth: 275 }}>
@@ -34,7 +34,7 @@ function ReservationCard({ reservation }) {
           {name}
         </Typography>
         <Typography variant="h5" component="div">
-          date: {date.slice(0, 10)} - {time} <br />
+          date: {dateTime}<br />
           table: {table} <br />
           guests: {guests}
         </Typography>
@@ -48,7 +48,10 @@ function ReservationCard({ reservation }) {
           component={Link}
           to={`/reservation/update/${_id}`}
         >Update</Button>
-        <Button size="small">Delete</Button>
+        <Button
+          onClick={() => deleteOwnReservation(_id)}
+          size="small"
+        >Delete</Button>
       </CardActions>
     </Card>
   );

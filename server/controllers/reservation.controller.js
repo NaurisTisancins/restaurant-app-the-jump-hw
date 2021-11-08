@@ -47,3 +47,15 @@ exports.updateOwnReservation = function (req, res) {
       res.sendStatus(200);
     });
 };//updateOwnReservation
+
+exports.removeOwnReservation = function (req, res) {
+  const reservationId = req.params.id;
+  Reservation.deleteOne({ _id: reservationId, customerID: req.user.sub }, function (err, report) {
+    if (err) return errorHandler(res, err);
+    logger.info(`report ${report}`);
+    if (reservationId && report.deletedCount === 0) {
+      return res.status(404).send({ message: "No order with that ID" });
+    };
+    res.sendStatus(204);
+  });
+};//deleteOwnReservation

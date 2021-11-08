@@ -10,7 +10,7 @@ import { DateTimePicker } from '@mui/lab';
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import { tables } from './../../constants';
 
 
@@ -37,8 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const schema = yup.object().shape({
-  time: yup.string().required(),
-  date: yup.date().required(),
+  dateTime: yup.date().required(),
   table: yup.number().oneOf(tables).required(),
   name: yup.string().required(),
   email: yup.string().required().email(),
@@ -48,6 +47,7 @@ const schema = yup.object().shape({
 function ReservationForm({ initialValues }) {
   const classes = useStyles();
   const { id } = useParams();
+  const history = useHistory();
   const [populated, setPopulated] = useState(false);
 
   const { addOwnReservation, updateOwnReservation, user } = useContext(ReservationContext);
@@ -57,8 +57,7 @@ function ReservationForm({ initialValues }) {
   }, [initialValues])
 
   const defaultValues = {
-    time: '',
-    date: '',
+    dateTime: '',
     table: '',
     name: '',
     email: '',
@@ -86,6 +85,7 @@ function ReservationForm({ initialValues }) {
       const updates = {
         ...initialValues,
         ...formValues,
+        dateTime: formValues.dateTime,
       };
       // for (const key in initialValues) {
       //   if (initialValues.hasOwnProperty(key)) {
@@ -94,10 +94,11 @@ function ReservationForm({ initialValues }) {
       //     }
       //   }
       // }
-      console.log("updates", updates);
+      updateOwnReservation(id, updates);
     } else {
       addOwnReservation(formValues);
     }
+    history.push("/reservation");
   };//onSubmit
 
   return (
@@ -108,40 +109,22 @@ function ReservationForm({ initialValues }) {
             { onChange, onBlur, value, name, ref },
             { invalid, isTouched, isDirty }
           ) => (
-            <TextField
-              inputRef={ref}
-              type="time"
+            <DateTimePicker
+              label="Date&Time"
               value={value}
               onChange={onChange}
               onBlur={onBlur}
-              error={!!errors.time}
-              helperText={errors.time?.message}
-              id="time"
-              name={name}
+              id="dateTime"
+              renderInput={(props) => {
+                return <TextField
+                  {...props}
+                  name={name}
+                  // inputRef={ref}
+                />
+              }}
             />
           )}
-          name="time"
-          control={control}
-          rules={{ required: true }}
-        />
-        <Controller
-          render={(
-            { onChange, onBlur, value, name, ref },
-            { invalid, isTouched, isDirty }
-          ) => (
-            <TextField
-              inputRef={ref}
-              type="date"
-              value={value}
-              onChange={onChange}
-              onBlur={onBlur}
-              error={!!errors.date}
-              helperText={errors.date?.message}
-              id="date"
-              name={name}
-            />
-          )}
-          name="date"
+          name="dateTime"
           control={control}
           rules={{ required: true }}
         />

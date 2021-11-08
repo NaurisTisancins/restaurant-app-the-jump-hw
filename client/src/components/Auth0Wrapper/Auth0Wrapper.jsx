@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import {CircularProgress} from '@material-ui/core';
-import Alert from '@material-ui/lab/Alert';
+import { Alert } from '@mui/material';
 function Wrapper({ children }) {
   const {
     isLoading,
