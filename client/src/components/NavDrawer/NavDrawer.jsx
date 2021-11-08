@@ -44,7 +44,8 @@ const NavDrawer = () => {
       { text: "Profile", to: "/profile" },
       { text: "Basket", to: "/basket" },
       { text: "Orders", to: "/orders" },
-      {text: "Add Reservation", to: "/reservation/add"},
+      {text: "Reservations", to: "/reservation"},
+      {text: "Add Reservation", to: "/reservation/add"}
     ];
   }
 

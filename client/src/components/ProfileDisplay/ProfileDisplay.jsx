@@ -19,7 +19,7 @@ function ProfileDisplay() {
         <dt style={dtStyles}>Email</dt><dd style={ddStyles}>{email}</dd>
         <dt style={dtStyles}>sub (unique id)</dt><dd style={ddStyles}>{sub}</dd>
         <dt style={dtStyles}>Locale</dt><dd style={ddStyles}>{locale}</dd>
-        <dt style={dtStyles}>Roles</dt><dd style={ddStyles}>{user[`${window.location.origin}/roles`].join()}</dd>
+        <dt style={dtStyles}>Roles</dt><dd style={ddStyles}>{user[`${window.location.origin}/roles`]}</dd>
         <dt style={dtStyles}>Permissions</dt><dd style={ddStyles}>
         <ul style={{listStyle: 'none', padding: 0}}>{user[`${window.location.origin}/user_authorization`].permissions.map(perm => (<li key={perm}>{perm}</li>))}</ul></dd>
       </dl>

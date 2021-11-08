@@ -1,5 +1,7 @@
 exports.productCategories = ["starter", "main", "dessert", "beverage"];
 
+exports.tables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
 exports.OrderPermission = Object.freeze({
   CreateOrders: "create:orders",
   DeleteOrders: "delete:orders",

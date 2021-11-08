@@ -6,6 +6,10 @@ const ReservationSchema = new Schema({
     type: String,
     required: true,
   },
+  time: {
+    type: String,
+    required: true,
+  },
   date: {
     type: Date,
     required: true,

@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Button,
   TextField,
 } from "@material-ui/core";
+import { DateTimePicker } from '@mui/lab';
 
 
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -11,6 +12,8 @@ import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { useParams } from "react-router-dom";
 import { tables } from './../../constants';
+
+
 
 import { ReservationContext } from './../../contexts/reservation.context';
 
@@ -39,16 +42,19 @@ const schema = yup.object().shape({
   table: yup.number().oneOf(tables).required(),
   name: yup.string().required(),
   email: yup.string().required().email(),
-  guest: yup.number().required(),
+  guests: yup.number().required(),
 });
 
 function ReservationForm({ initialValues }) {
   const classes = useStyles();
+  const { id } = useParams();
   const [populated, setPopulated] = useState(false);
 
-  const { addReservation, user } = useContext(ReservationContext);
+  const { addOwnReservation, updateOwnReservation, user } = useContext(ReservationContext);
 
-  const userID = user.sub;
+  useEffect(() => {
+    console.log(initialValues);
+  }, [initialValues])
 
   const defaultValues = {
     time: '',
@@ -59,7 +65,7 @@ function ReservationForm({ initialValues }) {
     guests: '',
   };//defaultValues
 
-  const {handleSubmit, errors, control, reset, formState } = useForm({
+  const { handleSubmit, errors, control, reset, formState } = useForm({
     resolver: yupResolver(schema),
     mode: "onChange",
     reValidateMode: "onChange",
@@ -68,9 +74,30 @@ function ReservationForm({ initialValues }) {
 
   const { isDirty, isValid } = formState;
 
+  if (initialValues && !populated) {
+    reset({
+      ...initialValues,
+    });
+    setPopulated(true);
+  }
+
   const onSubmit = async (formValues) => {
-    console.log(formValues);
-    // TODO
+    if (populated) {
+      const updates = {
+        ...initialValues,
+        ...formValues,
+      };
+      // for (const key in initialValues) {
+      //   if (initialValues.hasOwnProperty(key)) {
+      //     if (initialValues[key] !== formValues[key] && key[0] !== "_") {
+      //       updates[key] = formValues[key];
+      //     }
+      //   }
+      // }
+      console.log("updates", updates);
+    } else {
+      addOwnReservation(formValues);
+    }
   };//onSubmit
 
   return (
@@ -87,11 +114,10 @@ function ReservationForm({ initialValues }) {
               value={value}
               onChange={onChange}
               onBlur={onBlur}
-              error={!!errors.title}
-              helperText={errors.title?.message}
+              error={!!errors.time}
+              helperText={errors.time?.message}
               id="time"
               name={name}
-
             />
           )}
           name="time"
@@ -109,9 +135,8 @@ function ReservationForm({ initialValues }) {
               value={value}
               onChange={onChange}
               onBlur={onBlur}
-              
-              error={!!errors.title}
-              helperText={errors.title?.message}
+              error={!!errors.date}
+              helperText={errors.date?.message}
               id="date"
               name={name}
             />
@@ -134,8 +159,8 @@ function ReservationForm({ initialValues }) {
               onChange={onChange}
               onBlur={onBlur}
               type="number"
-              error={!!errors.title}
-              helperText={errors.title?.message}
+              error={!!errors.table}
+              helperText={errors.table?.message}
               id="table"
               name={name}
               label="table"
@@ -159,8 +184,8 @@ function ReservationForm({ initialValues }) {
               onChange={onChange}
               onBlur={onBlur}
               type="text"
-              error={!!errors.title}
-              helperText={errors.title?.message}
+              error={!!errors.name}
+              helperText={errors.name?.message}
               id="name"
               name={name}
               label="name"
@@ -183,9 +208,9 @@ function ReservationForm({ initialValues }) {
               value={value}
               onChange={onChange}
               onBlur={onBlur}
-             type="text"
-              error={!!errors.title}
-              helperText={errors.title?.message}
+              type="text"
+              error={!!errors.email}
+              helperText={errors.email?.message}
               id="email"
               name={name}
               label="email"
@@ -209,8 +234,8 @@ function ReservationForm({ initialValues }) {
               onChange={onChange}
               onBlur={onBlur}
               type="number"
-              error={!!errors.title}
-              helperText={errors.title?.message}
+              error={!!errors.guests}
+              helperText={errors.guests?.message}
               id="guests"
               name={name}
               label="guests"
@@ -228,7 +253,7 @@ function ReservationForm({ initialValues }) {
           variant="contained"
           color="primary"
           className={classes.button}
-        disabled={!isValid}
+          disabled={!isValid || !isDirty}
         >
           {populated ? "Update" : "Add"} Reservation
         </Button>

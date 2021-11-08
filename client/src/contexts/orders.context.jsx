@@ -123,7 +123,7 @@ export const OrdersProvider = (props) => {
       console.log("err", err);
       setError(err);
     }
-  }, [accessToken, setError, setLoading, setOrders, state]);
+  }, [accessToken, setError, setLoading, setOrders, state]);//fetchOwnOrders
 
   const addOrder = useCallback(
     async (items) => {

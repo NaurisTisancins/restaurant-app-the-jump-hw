@@ -19,3 +19,14 @@ export const ProductPermission = Object.freeze({
   ReadProducts: "read:products",
   UpdateProducts: "update:products",
 });
+
+export const ReservationPermission = Object.freeze({
+  CreateReservation: "create:reservation",
+  DeleteReservation: "delete:reservation",
+  ReadReservation: "read:reservation",
+  UpdateReservation: "update:reservation",
+  CreateOwnReservation: "create:reservation:own",
+  DeleteOwnReservation: "delete:reservation:own",
+  ReadOwnReservation: "read:reservation:own",
+  UpdateOwnReservation: "update:reservation:own",
+});

@@ -58,10 +58,8 @@ export const ReservationProvider = (props) => {
 
   useEffect(() => {
     const getToken = async () => {
-      console.log("getting AT", `http://${domain}/api/v1`);
       try {
         const Acctoken = await getAccessTokenSilently();
-        console.log("GOT AT", Acctoken);
         setAccessToken(Acctoken);
         console.log("afterSet", accessToken);
       } catch (err) {
@@ -80,21 +78,40 @@ export const ReservationProvider = (props) => {
     }
   }, [accessToken, getAccessTokenSilently, loginWithRedirect, user]);//getToken useEffect
 
-  //TODO fetch reservations
+  const fetchOwnReservations = useCallback(
+    async () => {
+      const { loading, loaded, error } = state;
 
-  const addReservation = useCallback(
-    async (formData) => {
-      console.log("headers", headers);
-      console.log("accessToken", accessToken);
+      if (loading || loaded || error || !accessToken) {
+        console.log("bailing");
+        return;
+      };
       setLoading();
+      try {
+        const response = await fetch("/api/v1/reservation", {
+          headers: accessToken ? { ...headers, Authorization: `Bearer ${accessToken}` } : headers,
+        });
+        if (!response.ok) {
+          throw response;
+        };
+        const data = await response.json();
+        console.log("reservations", data);
+        setReservations(data);
+      } catch (err) {
+        console.log("err", err);
+        setError(err);
+      }
+    }, [accessToken, setError, setLoading, setReservations, state]);//fetchOwnReservations
 
+  const addOwnReservation = useCallback(
+    async (formData) => {
+      setLoading();
       const { reservations } = state;
-
       try {
         const response = await fetch("/api/v1/reservation", {
           method: "POST",
           headers: accessToken ?
-            { ...headers, Authorisation: `Bearer ${accessToken}` } : headers,
+            { ...headers, Authorization: `Bearer ${accessToken}` } : headers,
           body: JSON.stringify(formData),
         });
         if (response.status !== 201) {
@@ -116,6 +133,47 @@ export const ReservationProvider = (props) => {
     }, [accessToken, addToast, setLoading, setReservations, state]
   );//addReservation
 
+  const updateOwnReservation = useCallback(
+    async (id, updates) => {
+      let newReservation = null;
+      setLoading();
+      const { Reservations } = state;
+      try {
+        const response = await fetch(`/api/v1/resrvation/${id}`, {
+          methot: "PUT",
+          headers: accessToken ?
+            { ...headers, Authorization: `Bearer ${accessToken}` } : headers,
+          body: JSON.stringify(updates),
+        });
+        if (!response.ok) {
+          throw response;
+        };
+        //update state
+        const idx = Reservations.findIndex((Reservation) => Reservation._id === id);
+        const oldReservation = Reservations[idx];
+        newReservation = {
+          ...oldReservation,
+          ...updates,
+        };
+        const updatedReservations = [
+          ...Reservations.slice(0, idx),
+          newReservation,
+          ...Reservations.slice(idx + 1),
+        ];
+        setReservations(updatedReservations);
+        addToast(`Updated ${newReservation.name} reservation`, {
+          appearance: "success",
+        });
+      } catch (err) {
+        console.log(err);
+        setError(err);
+        addToast(`Error: Failed to update ${newReservation.name} reservation`, {
+          appearance: "error",
+        });
+      }
+    }, [accessToken, addToast, setError, setLoading, setReservations, state]
+  );//updateOwnReservation
+
 
 
   return (
@@ -126,7 +184,8 @@ export const ReservationProvider = (props) => {
         loading,
         loaded,
         error,
-        addReservation,
+        fetchOwnReservations,
+        addOwnReservation,
       }}
     >
       {props.children}

@@ -21,6 +21,7 @@ import Home from "./pages/Home/Home";
 import AddProduct from "./pages/AddProduct/AddProduct";
 import UpdateProduct from "./pages/UpdateProduct/UpdateProduct";
 import AddReservation from "./pages/AddReservation/AddReservation";
+import UpdateReservation from "./pages/UpdateReservation/UpdateResrvation";
 import Basket from "./pages/Basket/Basket";
 import Orders from "./pages/Orders/Orders";
 import Profile from "./pages/Profile/Profile";
@@ -30,12 +31,18 @@ import NotFound from "./pages/404/404";
 import Auth0Wrapper from "./components/Auth0Wrapper/Auth0Wrapper";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import {
-  // OrderPermission,
+  OrderPermission,
   ProductPermission,
+  ReservationPermission,
 } from "./constants";
+
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import LocalizationProvider from '@mui/lab/LocalizationProvider';
 
 import history from "./utils/history";
 import { getConfig } from "./config";
+import Reservations from "./pages/Reservations/Reservations";
+
 
 const onRedirectCallback = (appState) => {
   history.push(
@@ -65,28 +72,42 @@ function App() {
               <OrdersProvider>
                 <BasketProvider>
                   <ReservationProvider>
-                    
-                    <Auth0Wrapper>
-                      <Switch>
-                        <Route exact path="/" component={Home} />
-                        <ProtectedRoute
-                          permissions={[ProductPermission.CreateProducts]}
-                          path="/product/add"
-                          component={AddProduct}
-                        />
-                        <ProtectedRoute
-                          permissions={[ProductPermission.UpdateProducts]}
-                          path="/product/update/:id"
-                          component={UpdateProduct}
-                        />
-                        <ProtectedRoute path="/basket" component={Basket} />
-                        <ProtectedRoute path="/orders" component={Orders} />
-                        <ProtectedRoute path="/profile" component={Profile} />
-                        <ProtectedRoute path="/reservation/add" component={AddReservation} />
-                        <Route path="*" component={NotFound} />
-                      </Switch>
-                    </Auth0Wrapper>
-                    
+                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                      <Auth0Wrapper>
+                        <Switch>
+                          <Route exact path="/" component={Home} />
+                          <ProtectedRoute
+                            permissions={[ProductPermission.CreateProducts]}
+                            path="/product/add"
+                            component={AddProduct}
+                          />
+                          <ProtectedRoute
+                            permissions={[ProductPermission.UpdateProducts]}
+                            path="/product/update/:id"
+                            component={UpdateProduct}
+                          />
+                          <ProtectedRoute path="/basket" component={Basket} />
+                          <ProtectedRoute path="/orders" component={Orders} />
+                          <ProtectedRoute path="/profile" component={Profile} />
+                          <ProtectedRoute
+                            exact
+                            path="/reservation"
+                            component={Reservations}
+                          />
+                          <ProtectedRoute
+                            exact
+                            permissions={[ReservationPermission.CreateOwnReservation]}
+                            path="/reservation/add"
+                            component={AddReservation} />
+                          <ProtectedRoute
+                            path="/reservation/update/:id"
+                            permissions={[ReservationPermission.UpdateOwnReservation]}
+                            component={UpdateReservation}
+                          />
+                          <Route path="*" component={NotFound} />
+                        </Switch>
+                      </Auth0Wrapper>
+                    </LocalizationProvider>
                   </ReservationProvider>
                 </BasketProvider>
               </OrdersProvider>

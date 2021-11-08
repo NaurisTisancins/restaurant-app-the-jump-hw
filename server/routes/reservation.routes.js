@@ -3,7 +3,9 @@ const express = require("express");
 const logger = require("./../logger");
 const router = express.Router();
 const {
-  addReservation,
+  getOwnReservations,
+  addOwnReservation,
+  updateOwnReservation,
 } = require("../controllers/reservation.controller");
 
 const { checkPermissions } = require("../middleware/permissions.middleware");
@@ -12,7 +14,13 @@ const { checkJwt } = require("./../middleware/authz.middleware");
 const {
   CreateReservation,
   CreateOwnReservation,
-} = require("../constants");
+  ReadOwnReservation,
+  ReadReservation,
+  UpdateOwnReservation,
+  UpdateReservation,
+  DeleteOwnReservation,
+  DeleteReservation,
+} = require("../constants").ReservationPermission;
 
 const logToken = (req, res, next) => {
   logger.info(`headers ${req.headers}`);
@@ -24,6 +32,23 @@ const logUser = (req, res, next) => {
   next();
 }
 
-router.post("/", addReservation);
+router
+  .get("/:id?",
+    logToken,
+    checkJwt,
+    checkPermissions(ReadOwnReservation),
+    getOwnReservations
+  )
+  .post("/",
+    logToken,
+    checkJwt,
+    checkPermissions(CreateOwnReservation),
+    addOwnReservation
+  )
+  .put("/:id",
+    checkJwt,
+    checkPermissions(UpdateOwnReservation),
+    updateOwnReservation
+  )
 
 module.exports = router;
